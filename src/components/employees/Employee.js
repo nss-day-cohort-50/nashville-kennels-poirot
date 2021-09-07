@@ -5,6 +5,8 @@ import useResourceResolver from "../../hooks/resource/useResourceResolver";
 import useSimpleAuth from "../../hooks/ui/useSimpleAuth";
 import person from "./person.png"
 import "./Employee.css"
+import { OxfordList } from "../../hooks/string/OxfordList";
+import LocationRepository from "../../repositories/LocationRepository";
 
 
 export default ({ employee }) => {
@@ -14,6 +16,7 @@ export default ({ employee }) => {
     const { employeeId } = useParams()
     const { getCurrentUser } = useSimpleAuth()
     const { resolveResource, resource } = useResourceResolver()
+    const [locations, updateLocations] = useState([])
 
     useEffect(() => {
         if (employeeId) {
@@ -24,9 +27,15 @@ export default ({ employee }) => {
 
     useEffect(() => {
         if (resource?.employeeLocations?.length > 0) {
+
             markLocation(resource.employeeLocations[0])
         }
     }, [resource])
+
+    useEffect(() => {
+        LocationRepository.getAll()
+        .then((data) => updateLocations(data))
+    }, [])
 
     return (
         <article className={classes}>
@@ -53,7 +62,20 @@ export default ({ employee }) => {
                                 Caring for 0 animals
                             </section>
                             <section>
-                                Working at unknown location
+                                Working at {"locations" in resource && Array.isArray(resource.locations) && resource.locations.length > 0 ? OxfordList(resource?.locations, "location.name") : "unknown"}
+                            </section>
+                            <section>
+                                <label for="locationsDropdown">Choose a location:</label>
+                                <select name="locationsDropdown" id="locationsDropdown">
+                                    {
+                                    locations.map(
+                                        (locationObject) => {
+                                            return <option key={locationObject.id} value={locationObject.id}>{locationObject.name}</option>
+                                        }
+                                        )
+                                    }
+
+                                </select>
                             </section>
                         </>
                         : ""

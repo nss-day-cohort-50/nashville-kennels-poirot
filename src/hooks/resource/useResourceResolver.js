@@ -14,7 +14,7 @@ const useResourceResolver = () => {
             setResource(property)
         }
         else {
-            // If being rendered indepedently
+            // If being rendered independently
             if (param) {
                 getter(param).then(retrievedResource => {
                     setResource(retrievedResource)
