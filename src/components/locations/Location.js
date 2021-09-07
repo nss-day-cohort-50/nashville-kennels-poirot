@@ -4,11 +4,13 @@ import AnimalRepository from "../../repositories/AnimalRepository";
 import EmployeeRepository from "../../repositories/EmployeeRepository";
 import locationImage from "./location.png"
 import "./Location.css"
+import LocationRepository from "../../repositories/LocationRepository";
 
 
 export default ({location}) => {
     const [animals, updateAnimals] = useState([])
     const [employees, updateEmployees] = useState([])
+    const [locations, updateLocations] = useState([])
 
     useEffect(() => {
         AnimalRepository.getAll()
@@ -18,6 +20,11 @@ export default ({location}) => {
     useEffect(() => {
         EmployeeRepository.getAll()
         .then((data) => updateEmployees(data))
+    }, [])
+
+    useEffect(() => {
+        LocationRepository.getAll()
+        .then((data) => updateLocations(data))
     }, [])
 
     return (
@@ -38,9 +45,9 @@ export default ({location}) => {
                 {
                     animals.map(
                         (animal) => {
-                            if (location.id === animal.locationId) {
-                                return `Total animals: ${animals.length}`
-                            }
+                            const matchingAnimals = locations.filter(location => location.id === animal.locationId)
+                            
+                            return `${matchingAnimals.length} animals`
                     })
                 }
             </section>
