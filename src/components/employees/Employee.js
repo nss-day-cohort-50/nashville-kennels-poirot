@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useHistory } from "react-router-dom"
 import EmployeeRepository from "../../repositories/EmployeeRepository";
 import useResourceResolver from "../../hooks/resource/useResourceResolver";
 import useSimpleAuth from "../../hooks/ui/useSimpleAuth";
@@ -17,6 +17,7 @@ export default ({ employee }) => {
     const { getCurrentUser } = useSimpleAuth()
     const { resolveResource, resource } = useResourceResolver()
     const [locations, updateLocations] = useState([])
+    const history = useHistory()
 
     useEffect(() => {
         if (employeeId) {
@@ -36,6 +37,19 @@ export default ({ employee }) => {
         LocationRepository.getAll()
         .then((data) => updateLocations(data))
     }, [])
+
+    const employeeAssignment = (id) => {
+        const assignmentData = {
+            userId: employeeId,
+            locationId: parseInt(id)
+        }
+        const refreshPage = () => {
+            window.location.reload(false)
+        }
+        
+        EmployeeRepository.assignEmployee(assignmentData)
+        .then(() => {refreshPage()})
+    }
 
     return (
         <article className={classes}>
@@ -66,11 +80,12 @@ export default ({ employee }) => {
                             </section>
                             <section>
                                 <label for="locationsDropdown">Choose a location:</label>
-                                <select name="locationsDropdown" id="locationsDropdown">
+                                <select name="locationsDropdown" id="locationsDropdown" onChange={(event) => {employeeAssignment(event.target.value)}}>
+                                    <option value="0">Select a location</option>
                                     {
                                     locations.map(
                                         (locationObject) => {
-                                            return <option key={locationObject.id} value={locationObject.id}>{locationObject.name}</option>
+                                            return <option key={locationObject.id} value={locationObject.id} >{locationObject.name}</option>
                                         }
                                         )
                                     }
