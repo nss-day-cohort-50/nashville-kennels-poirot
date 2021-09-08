@@ -35,7 +35,12 @@ export default {
     async delete(id) {
         return await fetchIt(`${Settings.remoteURL}/locations/${id}`, "DELETE")
     },
+    async getEmployeeLocationsArray() {
+        return await fetchIt(`${Settings.remoteURL}/employeeLocations?_expand=user&_expand=location`)
+    },
     async getAll() {
         return await fetchIt(`${Settings.remoteURL}/locations?_embed=animals&_embed=employeeLocations`)
     }
 }
+
+

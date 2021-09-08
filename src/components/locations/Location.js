@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import AnimalRepository from "../../repositories/AnimalRepository";
-import EmployeeRepository from "../../repositories/EmployeeRepository";
 import locationImage from "./location.png"
 import "./Location.css"
 import LocationRepository from "../../repositories/LocationRepository";
@@ -9,8 +8,7 @@ import LocationRepository from "../../repositories/LocationRepository";
 
 export default ({location}) => {
     const [animals, updateAnimals] = useState([])
-    const [employees, updateEmployees] = useState([])
-    const [locations, updateLocations] = useState([])
+    const [employeeLocations, updateEmployeeLocations] = useState([])
 
     useEffect(() => {
         AnimalRepository.getAll()
@@ -18,14 +16,14 @@ export default ({location}) => {
     }, [])
 
     useEffect(() => {
-        EmployeeRepository.getAll()
-        .then((data) => updateEmployees(data))
+        LocationRepository.getEmployeeLocationsArray()
+        .then((data) => updateEmployeeLocations(data))
     }, [])
 
-    useEffect(() => {
-        LocationRepository.getAll()
-        .then((data) => updateLocations(data))
-    }, [])
+    
+
+    const matchingAnimals = animals.filter(animal => animal.locationId === location.id)
+    const matchingEmployees = employeeLocations.filter(employeeLocation => employeeLocation.locationId === location.id)
 
     return (
         <article className="card location" style={{ width: `18rem` }}>
@@ -42,17 +40,10 @@ export default ({location}) => {
                 </h5>
             </section>
             <section>
-                {
-                    animals.map(
-                        (animal) => {
-                            const matchingAnimals = locations.filter(location => location.id === animal.locationId)
-                            
-                            return `${matchingAnimals.length} animals`
-                    })
-                }
+                Total Animals: {matchingAnimals.length}
             </section>
             <section>
-                Total locations
+                Total Employees: {matchingEmployees.length}
             </section>
         </article>
     )
