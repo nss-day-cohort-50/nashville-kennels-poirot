@@ -7,6 +7,7 @@ import person from "./person.png"
 import "./Employee.css"
 import { OxfordList } from "../../hooks/string/OxfordList";
 import LocationRepository from "../../repositories/LocationRepository";
+import AnimalRepository from "../../repositories/AnimalRepository";
 
 
 export default ({ employee }) => {
@@ -17,6 +18,7 @@ export default ({ employee }) => {
     const { getCurrentUser } = useSimpleAuth()
     const { resolveResource, resource } = useResourceResolver()
     const [locations, updateLocations] = useState([])
+    const [caretakers, updateCaretakers] = useState([])
 
     useEffect(() => {
         if (employeeId) {
@@ -37,6 +39,11 @@ export default ({ employee }) => {
             .then((data) => updateLocations(data))
     }, [])
 
+    useEffect(() => {
+        AnimalRepository.getCaretakers()
+        .then((data) => updateCaretakers(data))
+    }, [])
+
     const employeeAssignment = (id) => {
         const assignmentData = {
             userId: parseInt(employeeId),
@@ -49,6 +56,8 @@ export default ({ employee }) => {
             })
 
     }
+
+    const matchingCaretakers = caretakers.filter(caretaker => caretaker.userId === resource.id)
 
     return (
         <article className={classes}>
@@ -72,7 +81,7 @@ export default ({ employee }) => {
                     employeeId
                         ? <>
                             <section>
-                                Caring for 0 animals
+                                Caring for {matchingCaretakers.length} animal(s)
                             </section>
                             <section>
                                 Working at {"locations" in resource && Array.isArray(resource.locations) && resource.locations.length > 0 ? OxfordList(resource?.locations, "location.name") : "unknown"}

@@ -31,6 +31,9 @@ export default {
     async delete(id) {
         return await fetchIt(`${Settings.remoteURL}/animals/${id}`, "DELETE")
     },
+    async getCaretakers(id) {
+        return await fetchIt(`${Settings.remoteURL}/animalCaretakers?_expand=animal&_expand=user`)
+    },
     async getAll() {
         const users = await OwnerRepository.getAll()
         const animals = await fetchIt(`${Settings.remoteURL}/animals?_embed=animalOwners&_embed=treatments&_embed=animalCaretakers`)
