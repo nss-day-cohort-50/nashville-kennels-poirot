@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useHistory } from "react-router-dom"
 import EmployeeRepository from "../../repositories/EmployeeRepository";
 import useResourceResolver from "../../hooks/resource/useResourceResolver";
 import useSimpleAuth from "../../hooks/ui/useSimpleAuth";
@@ -11,7 +11,7 @@ import LocationRepository from "../../repositories/LocationRepository";
 
 export default ({ employee }) => {
     const [animalCount, setCount] = useState(0)
-    const [location, markLocation] = useState({ name: "" })
+    const [employeeLocations, markLocation] = useState([])
     const [classes, defineClasses] = useState("card employee")
     const { employeeId } = useParams()
     const { getCurrentUser } = useSimpleAuth()
@@ -26,16 +26,29 @@ export default ({ employee }) => {
     }, [])
 
     useEffect(() => {
-        if (resource?.employeeLocations?.length > 0) {
+        if (resource?.locations?.length > 0) {
 
-            markLocation(resource.employeeLocations[0])
+            markLocation(resource.locations)
         }
     }, [resource])
 
     useEffect(() => {
         LocationRepository.getAll()
-        .then((data) => updateLocations(data))
+            .then((data) => updateLocations(data))
     }, [])
+
+    const employeeAssignment = (id) => {
+        const assignmentData = {
+            userId: parseInt(employeeId),
+            locationId: parseInt(id)
+        }
+
+        EmployeeRepository.assignEmployee(assignmentData)
+            .then(() => {
+                resolveResource(employee, employeeId, EmployeeRepository.get)
+            })
+
+    }
 
     return (
         <article className={classes}>
@@ -64,25 +77,30 @@ export default ({ employee }) => {
                             <section>
                                 Working at {"locations" in resource && Array.isArray(resource.locations) && resource.locations.length > 0 ? OxfordList(resource?.locations, "location.name") : "unknown"}
                             </section>
-                            <section>
-                                <label for="locationsDropdown">Choose a location:</label>
-                                <select name="locationsDropdown" id="locationsDropdown">
-                                    {
-                                    locations.map(
-                                        (locationObject) => {
-                                            return <option key={locationObject.id} value={locationObject.id}>{locationObject.name}</option>
+                            { resource?.locations?.length >= 1 ? "" :
+                                <section>
+                                    <label for="locationsDropdown">Choose a location:</label>
+                                    <select name="locationsDropdown" id="locationsDropdown" onChange={
+                                        (event) => { employeeAssignment(event.target.value) }
+                                    }>
+                                        <option value="0">Select a location</option>
+                                        {
+                                            locations.map(
+                                                (locationObject) => {
+                                                    return <option key={locationObject.id} value={locationObject.id} >{locationObject.name}</option>
+                                                }
+                                            )
                                         }
-                                        )
-                                    }
 
-                                </select>
-                            </section>
+                                    </select>
+                                </section>
+                            }
                         </>
                         : ""
                 }
 
                 {
-                    <button className="btn--fireEmployee" onClick={() => {}}>Fire</button>
+                    <button className="btn--fireEmployee" onClick={() => { }}>Fire</button>
                 }
 
             </section>
