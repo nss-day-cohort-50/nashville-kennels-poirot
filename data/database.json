@@ -129,6 +129,11 @@
       "id": 12,
       "animalId": 3,
       "userId": 14
+    },
+    {
+      "id": 13,
+      "animalId": 3,
+      "userId": 1
     }
   ],
   "users": [
@@ -329,6 +334,21 @@
       "id": 14,
       "userId": 14,
       "locationId": 2
+    },
+    {
+      "userId": 6,
+      "locationId": 1,
+      "id": 16
+    },
+    {
+      "userId": 6,
+      "locationId": 2,
+      "id": 17
+    },
+    {
+      "userId": 3,
+      "locationId": 2,
+      "id": 18
     }
   ],
   "locations": [
